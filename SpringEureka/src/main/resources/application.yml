@@ -1,0 +1,11 @@
+server:
+  port: ${PORT:8761}
+
+
+spring:
+  application:
+    name: springeureka
+
+eureka:
+  instance:
+    hostname: ${HOST:localhost}
