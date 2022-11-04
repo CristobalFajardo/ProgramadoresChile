@@ -1,0 +1,26 @@
+server:
+  port: ${PORT:8003}
+spring:
+  application:
+    name: msvc-mascotas
+  jpa:
+    database: sql_server
+    show-sql: true
+    hibernate:
+    ddl-auto: update
+  datasource:
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://${HOST:192.168.2.130};databaseName=${DB_DATABASE:WebCorpTest};encrypt=true;trustServerCertificate=true;
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:Emasa2017}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE_URL:http://localhost:8761/eureka}
+
+#para seguridad
+security:
+  oauth2:
+   resource:
+     userInfoUri: ${SECURITY_DEFAULT_ZONE_URL:http://localhost:9999/user}

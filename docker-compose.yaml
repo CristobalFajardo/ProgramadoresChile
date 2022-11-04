@@ -1,0 +1,83 @@
+version: "3.9"
+services:
+  springeureka:
+    container_name: springeureka
+    #image: cristobalfajardo/springeureka:latest
+    build:
+      context: ./
+      dockerfile: ./SpringEureka/Dockerfile
+    ports:
+      - "8761:8761"
+    environment:
+      PORT: 8761
+    networks:
+        - spring
+    restart: always
+
+  springauthserver:
+    container_name: springauthserver
+    #image: cristobalfajardo/springauthserver:latest
+    build:
+      context: ./
+      dockerfile: ./springauthserver/Dockerfile
+    ports:
+      - "9999:9999"
+    environment:
+      PORT: 9999
+      DB_HOST: Host;databaseName=BDName;encrypt=true;trustServerCertificate=true;
+      DB_DATABASE:
+      DB_USERNAME:
+      DB_PASSWORD:
+      EUREKA_DEFAULT_ZONE_URL: http://springeureka:8761/eureka
+      SECURITY_DEFAULT_ZONE_URL: http://springauthserver:9999/user
+    networks:
+      - spring
+    depends_on:
+      - springeureka
+    restart: always
+  msvc-mascotas:
+    container_name: msvc-mascotas
+    #image: cristobalfajardo/msvc-mascotas:latest
+    build:
+      context: ./
+      dockerfile: ./msvc-mascotas/Dockerfile
+
+    ports:
+      - "8003:8003"
+    environment:
+      PORT: 8003
+      DB_HOST: Host;databaseName=nameBD;encrypt=true;trustServerCertificate=true;
+      DB_DATABASE:
+      DB_USERNAME:
+      DB_PASSWORD:
+      EUREKA_DEFAULT_ZONE_URL: http://springeureka:8761/eureka
+      SECURITY_DEFAULT_ZONE_URL: http://springauthserver:9999/user
+    networks:
+      - spring
+    depends_on:
+      - springeureka
+      - springauthserver
+    restart: always
+
+  springgateway:
+    container_name: springgateway
+    #image: cristobalfajardo/springgateway:latest
+    build:
+      context: ./
+      dockerfile: ./springgateway/Dockerfile
+    ports:
+      - "8099:8099"
+    environment:
+      PORT: 8099
+      EUREKA_DEFAULT_ZONE_URL: http://springeureka:8761/eureka
+    networks:
+      - spring
+    depends_on:
+      - springeureka
+      - springauthserver
+      - msvc-mascotas
+    restart: always
+
+networks:
+  spring:
+    name: spring
